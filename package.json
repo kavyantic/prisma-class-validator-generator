@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "tsc",
     "start": "npm run build && npx prisma generate",
     "package:publish": "./package.sh && cd package && npm publish",
     "test": "vitest",
