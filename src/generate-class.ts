@@ -36,7 +36,10 @@ function generateSingleClass(
   model: PrismaDMMF.Model,
 ) {
   const dirPath = path.resolve(config.outputDir, 'models');
-  const filePath = path.resolve(dirPath, `${model.name}.model.ts`);
+  const filePath = path.resolve(
+    dirPath,
+    `${model.name.toLocaleLowerCase()}.model.ts`,
+  );
   const sourceFile = project.createSourceFile(filePath, undefined, {
     overwrite: true,
   });

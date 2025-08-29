@@ -124,16 +124,16 @@ export const getDecoratorsByFieldType = (
       });
       break;
   }
-  if (field.isRequired) {
-    decorators.unshift({
-      name: 'IsDefined',
-      arguments: [],
-    });
-  } else {
+  if (!field.isRequired) {
     decorators.unshift({
       name: 'IsOptional',
       arguments: [],
     });
+  } else {
+    // decorators.unshift({
+    //   name: 'IsDefined',
+    //   arguments: [],
+    // });
   }
   if (field.kind === 'enum') {
     decorators.push({
