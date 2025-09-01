@@ -305,7 +305,7 @@ export const generateEnumImports = (
   if (enumsToImport.length > 0) {
     sourceFile.addImportDeclaration({
       moduleSpecifier: '../enums',
-      namedImports: enumsToImport,
+      namedImports: [...new Set(enumsToImport)],
     });
   }
 };
