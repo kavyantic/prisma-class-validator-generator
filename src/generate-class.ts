@@ -13,6 +13,7 @@ import {
   getDecoratorsImportsByType,
   getSwaggerImportsByType,
   getTSDataTypeFromFieldType,
+  isRelationalDataType,
   shouldImportHelpers,
   shouldImportPrisma,
   shouldImportSwagger,
@@ -82,22 +83,46 @@ function generateSingleClass(
 
   generateEnumImports(sourceFile, model.fields as PrismaDMMF.Field[]);
 
+  const primitives: PrismaDMMF.Field[] = [];
+  const relations: PrismaDMMF.Field[] = [];
+
+  for (let f of model.fields) {
+    if (isRelationalDataType(f)) {
+      relations.push(f);
+    } else {
+      primitives.push(f);
+    }
+  }
   sourceFile.addClass({
     name: model.name,
     isExported: true,
     properties: [
-      ...model.fields.map<OptionalKind<PropertyDeclarationStructure>>(
-        (field) => {
-          return {
-            name: field.name,
-            type: getTSDataTypeFromFieldType(field),
-            hasExclamationToken: field.isRequired,
-            hasQuestionToken: !field.isRequired,
-            trailingTrivia: '\r\n',
-            decorators: getDecoratorsByFieldType(field, config.swagger),
-          };
-        },
-      ),
+      ...primitives.map<OptionalKind<PropertyDeclarationStructure>>((field) => {
+        return {
+          name: field.name,
+          type: getTSDataTypeFromFieldType(field),
+          hasExclamationToken: field.isRequired,
+          hasQuestionToken: !field.isRequired,
+          trailingTrivia: '\r\n',
+          decorators: getDecoratorsByFieldType(field, config.swagger),
+        };
+      }),
+    ],
+  });
+  sourceFile.addClass({
+    name: `${model.name}Relation`,
+    isExported: true,
+    properties: [
+      ...relations.map<OptionalKind<PropertyDeclarationStructure>>((field) => {
+        return {
+          name: field.name,
+          type: getTSDataTypeFromFieldType(field),
+          hasExclamationToken: field.isRequired,
+          hasQuestionToken: !field.isRequired,
+          trailingTrivia: '\r\n',
+          decorators: getDecoratorsByFieldType(field, config.swagger),
+        };
+      }),
     ],
   });
 }

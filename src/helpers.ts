@@ -77,6 +77,24 @@ export const getTSDataTypeFromFieldType = (field: PrismaDMMF.Field) => {
   return type;
 };
 
+const nativeDataTypes = [
+  'Int',
+  'Float',
+  'String',
+  'Boolean',
+  'Decimal',
+  'Json',
+  'Bytes',
+  'DateTime',
+] as const;
+export const isRelationalDataType = (field: PrismaDMMF.Field) => {
+  let type = field.type;
+  return field.kind == 'object';
+  // return nativeDataTypes.includes(field.type as any);
+};
+
+// function addOptionalArgs(arr: any[],) {}
+
 export const getDecoratorsByFieldType = (
   field: PrismaDMMF.Field,
   includeSwagger: boolean = false,
@@ -90,37 +108,41 @@ export const getDecoratorsByFieldType = (
       decorators.push(swaggerDecorator);
     }
   }
+  var decoratorsArgs = [];
+  if (field.isList) {
+    decoratorsArgs.push(JSON.stringify({ each: true }));
+  }
 
   // Add class-validator decorators
   switch (field.type) {
     case 'Int':
       decorators.push({
         name: 'IsInt',
-        arguments: [],
+        arguments: decoratorsArgs,
       });
       break;
     case 'Float':
       decorators.push({
         name: 'IsNumber',
-        arguments: [],
+        arguments: decoratorsArgs,
       });
       break;
     case 'DateTime':
       decorators.push({
         name: 'IsDate',
-        arguments: [],
+        arguments: decoratorsArgs,
       });
       break;
     case 'String':
       decorators.push({
         name: 'IsString',
-        arguments: [],
+        arguments: decoratorsArgs,
       });
       break;
     case 'Boolean':
       decorators.push({
         name: 'IsBoolean',
-        arguments: [],
+        arguments: decoratorsArgs,
       });
       break;
   }
